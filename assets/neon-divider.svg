@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 12" width="1200" height="12" preserveAspectRatio="none" role="img" aria-label="Animated neon divider">
+  <title>Animated neon divider</title>
+  <defs>
+    <!-- spreadMethod="repeat" tiles the ramp every 600px, so a 2400px bar holds
+         exactly 4 tiles and sliding it by one tile width loops seamlessly. -->
+    <linearGradient id="neon" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="0" spreadMethod="repeat">
+      <stop offset="0%"   stop-color="#00F5D4"/>
+      <stop offset="25%"  stop-color="#7DF9FF"/>
+      <stop offset="50%"  stop-color="#A855F7"/>
+      <stop offset="75%"  stop-color="#F72585"/>
+      <stop offset="100%" stop-color="#00F5D4"/>
+    </linearGradient>
+    <linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1200" y2="0">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
+      <stop offset="12%"  stop-color="#fff" stop-opacity="1"/>
+      <stop offset="88%"  stop-color="#fff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="edges">
+      <rect x="0" y="0" width="1200" height="12" fill="url(#fade)"/>
+    </mask>
+  </defs>
+
+  <style>
+    .bar { animation: slide 5s linear infinite; }
+    @keyframes slide { from { transform: translateX(-600px); } to { transform: translateX(0); } }
+    .pulse { animation: breathe 2.6s ease-in-out infinite; transform-origin: center; }
+    @keyframes breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .bar, .pulse { animation: none; }
+    }
+  </style>
+
+  <g mask="url(#edges)">
+    <rect class="bar" x="0" y="4" width="2400" height="4" rx="2" fill="url(#neon)"/>
+    <rect class="bar pulse" x="0" y="4" width="2400" height="4" rx="2" fill="url(#neon)" opacity=".6"/>
+  </g>
+</svg>

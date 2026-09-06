@@ -25,8 +25,72 @@ jobs:
           github_user_name: ${{ github.repository_owner }}
           # NOTE: "#" is literal here — a block scalar has no YAML comments.
           outputs: |
-            dist/github-snake.svg
+            dist/github-snake.svg?color_snake=#7C3AED&color_dots=#EBEDF0,#DDD6FE,#A78BFA,#7C3AED,#5B21B6
             dist/github-snake-dark.svg?palette=github-dark&color_snake=#00F5D4&color_dots=#161B22,#3C1E5E,#6D28D9,#A855F7,#00F5D4
+
+      - name: Crop off-grid space and add animated neon colours
+        run: |
+          python3 <<'PY'
+          import math, pathlib, re
+
+          # Neon cycles: cyan-forward on dark, violet-forward on light (contrast on white).
+          PALETTES = {
+              "dark":  ["#00F5D4", "#7DF9FF", "#A855F7", "#F72585", "#FFD60A"],
+              "light": ["#7C3AED", "#0891B2", "#C026D3", "#DB2777", "#4F46E5"],
+          }
+
+          for path in sorted(pathlib.Path("dist").glob("*.svg")):
+              svg = path.read_text(encoding="utf-8")
+              body = svg[svg.find("</style>") + 8:]
+
+              # ---- 1. Crop the viewBox to the real content -------------------
+              # snk emits viewBox="-16 -32 W H". That -32 top margin exists only so
+              # the snake can park its segments one row ABOVE the grid while idle
+              # (keyframe: translate(0,-16px)), which reads as "snake outside the
+              # grid". Cropping the top to y=0 clips the parked segments; the
+              # progress bar below the grid (y=144) must stay, so height is
+              # derived from real content instead of a fixed trim.
+              maxx = maxy = 0.0
+              for rect in re.findall(r"<rect[^>]*/>", body):
+                  def attr(name, default):
+                      m = re.search(r'\b%s="(-?[\d.]+)"' % name, rect)
+                      return float(m.group(1)) if m else default
+                  maxx = max(maxx, attr("x", 0.0) + attr("width", 12.0))
+                  maxy = max(maxy, attr("y", 0.0) + attr("height", 12.0))
+
+              if maxx and maxy:
+                  w, h = math.ceil(maxx) + 1, math.ceil(maxy) + 1
+                  svg = re.sub(r'viewBox="[^"]*"', f'viewBox="0 0 {w} {h}"', svg, count=1)
+                  svg = re.sub(r'width="[\d.]+" height="[\d.]+"',
+                               f'width="{w}" height="{h}"', svg, count=1)
+
+              # ---- 2. Animate the snake through a neon cycle -----------------
+              # --cs is the snake colour. Registering it with @property lets it
+              # interpolate smoothly; browsers without @property still step
+              # through the keyframe colours, so it degrades to a colour cycle
+              # rather than breaking.
+              colours = PALETTES["dark" if "dark" in path.name else "light"]
+              ring = colours + [colours[0]]
+              stops = "".join(
+                  f"{round(i * 100 / (len(ring) - 1))}%{{--cs:{c}}}"
+                  for i, c in enumerate(ring)
+              )
+              # NOTE: "&lt;color&gt;", not "<color>". An .svg is parsed as XML, so a
+              # literal "<" inside <style> ends the element and breaks the whole
+              # image. The XML parser decodes the entity back to "<" before the
+              # CSS parser sees it, so @property still registers correctly.
+              css = (
+                  f"@property --cs{{syntax:'&lt;color&gt;';inherits:true;initial-value:{colours[0]}}}"
+                  f"svg{{animation:csx 6s linear infinite}}"
+                  f"@keyframes csx{{{stops}}}"
+                  # Neon glow that tracks whatever colour the snake currently is.
+                  f".s{{filter:drop-shadow(0 0 2.5px var(--cs))}}"
+              )
+              svg = svg.replace("</style>", css + "</style>", 1)
+
+              path.write_text(svg, encoding="utf-8")
+              print(f"{path.name}: viewBox -> 0 0 {w} {h}, {len(colours)}-colour cycle")
+          PY
 
       - name: Push to the output branch
         uses: crazy-max/ghaction-github-pages@v4
