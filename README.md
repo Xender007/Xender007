@@ -153,9 +153,9 @@
 <sub><b>🔥 CONTRIBUTION HEATMAP</b></sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://ghchart.rshah.org/00F5D4/Xender007" />
-  <source media="(prefers-color-scheme: light)" srcset="https://ghchart.rshah.org/6D28D9/Xender007" />
-  <img width="92%" src="https://ghchart.rshah.org/00F5D4/Xender007" alt="Contribution heatmap" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Xender007/Xender007/output/github-heatmap-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Xender007/Xender007/output/github-heatmap.svg" />
+  <img width="94%" src="https://raw.githubusercontent.com/Xender007/Xender007/output/github-heatmap-dark.svg" alt="Contribution heatmap" />
 </picture>
 
 </div>
