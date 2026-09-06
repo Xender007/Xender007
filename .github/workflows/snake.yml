@@ -31,6 +31,14 @@ jobs:
             dist/github-snake.svg?color_snake=#7C3AED&color_dots=#EBEDF0,#DDD6FE,#A78BFA,#7C3AED,#5B21B6
             dist/github-snake-dark.svg?palette=github-dark&color_snake=#00F5D4&color_dots=#161B22,#3C1E5E,#6D28D9,#A855F7,#00F5D4
 
+      # Platane/snk is a Docker action, so it writes dist/ as root while every
+      # other step runs as "runner". Without this the post-processing step can
+      # read the SVGs but not write them back (PermissionError).
+      - name: Take ownership of the generated files
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" dist
+          ls -la dist
+
       # Crops the off-grid parking row above the grid and adds the neon cycle.
       # Lives in a file rather than a heredoc so it can be tested verbatim.
       - name: Crop off-grid space and add animated neon colours
