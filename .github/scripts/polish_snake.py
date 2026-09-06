@@ -117,8 +117,12 @@ def main():
             log("%s: ERROR %s: %s" % (path.name, type(exc).__name__, exc))
 
     # The report rides along to the output branch, which is the only way to see
-    # what happened here without admin rights on the Actions logs.
-    (DIST / "_polish-report.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
+    # what happened here without admin rights on the Actions logs. Never let a
+    # failure to write it mask the real error above.
+    try:
+        (DIST / "_polish-report.txt").write_text("\n".join(report) + "\n", encoding="utf-8")
+    except Exception as exc:
+        print("could not write report: %s: %s" % (type(exc).__name__, exc))
     return 1 if failures else 0
 
 
