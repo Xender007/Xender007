@@ -1,0 +1,9 @@
+found 2 snake svg(s): ['github-snake-dark.svg', 'github-snake.svg']
+github-snake-dark.svg: clamped 15 off-grid keyframe(s) onto the grid
+github-snake-dark.svg: grid bottom 110, moved 4 bar rect(s) to y=118
+github-snake-dark.svg: viewBox -16 -32 880 192 -> -3 -3 855 136
+github-snake-dark.svg: 5-colour neon cycle + glow
+github-snake.svg: clamped 15 off-grid keyframe(s) onto the grid
+github-snake.svg: grid bottom 110, moved 4 bar rect(s) to y=118
+github-snake.svg: viewBox -16 -32 880 192 -> -3 -3 855 136
+github-snake.svg: 5-colour neon cycle + glow
